@@ -1,0 +1,34 @@
+# import * from './generated/prisma.graphql'
+type SuccessMessage {
+    message: String
+}
+type Mutation {
+    signup(email: String!, password: String!, name: String!): User
+    login(email: String!, password: String!): User
+    createMovie(
+        title: String!
+        year: Int
+        description: String
+        image: String
+    ): Movie!
+    createReview(contents: String!, movieId: ID!, rating: Int!): Review!
+    logout: SuccessMessage
+}
+
+type Query {
+    me: User
+    movies(where: MovieWhereInput, orderBy: MovieOrderByInput): [Movie]!
+    movie(where: MovieWhereUniqueInput): Movie
+    reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput): [Review]!
+    review(where: MovieWhereUniqueInput): Review
+    users(where: UserWhereInput, orderBy: UserOrderByInput): [User]!
+    user(where: UserWhereUniqueInput): User
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    image: String
+    reviews: [Review!]!
+}

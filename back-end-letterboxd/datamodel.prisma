@@ -1,0 +1,25 @@
+type User {
+    id: ID! @unique
+    name: String!
+    email: String! @unique
+    password: String!
+    image: String
+    reviews: [Review!]!
+}
+
+type Movie {
+    id: ID! @unique
+    title: String!
+    description: String
+    image: String
+    year: Int
+    reviews: [Review!]!
+}
+
+type Review {
+    id: ID! @unique
+    writer: User!
+    movie: Movie!
+    contents: String
+    rating: Int
+}
