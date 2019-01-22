@@ -10,6 +10,7 @@ const ReviewListItemStyles = styled.li`
     border-bottom: 1px solid ${props => props.theme.lightgrey};
     overflow: hidden;
     padding: 15px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
     .image-column {
         align-self: flex-start;
     }
@@ -18,13 +19,11 @@ const ReviewListItemStyles = styled.li`
         h2 {
             font-size: 1.5rem;
             color: ${props => props.theme.white};
-            font-family: Georgia, 'Times New Roman', Times, serif;
         }
         .rating {
             color: ${props => props.theme.green};
         }
         .contents {
-            font-family: Georgia, 'Times New Roman', Times, serif;
             font-size: 1.3rem;
             a {
                 color: ${props => props.theme.white};
