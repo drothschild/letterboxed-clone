@@ -4,12 +4,14 @@ import gql from 'graphql-tag';
 import { navigate } from '@reach/router';
 import Form from './styles/Form';
 import Error from './Error';
+import Auth from './Auth';
+import { ALL_MOVIES_QUERY } from './Movies';
 
 const CREATE_MOVIE_MUTATION = gql`
     mutation CREATE_MOVIE_MUTATION(
         $title: String!
         $description: String!
-        $year: Int
+        $year: Int!
         $image: String
     ) {
         createMovie(
@@ -57,71 +59,83 @@ class CreateMovie extends Component {
 
     render() {
         return (
-            <Mutation mutation={CREATE_MOVIE_MUTATION} variables={this.state}>
-                {(createMovie, { loading, error }) => (
-                    <Form
-                        onSubmit={async e => {
-                            e.preventDefault();
-                            const res = await createMovie();
-                            navigate(`/movies/${res.data.createMovie.id}`);
-                        }}
-                    >
-                        <h2>Add a movie</h2>
-                        {error && <Error error={error} />}
-                        <fieldset
-                            disabled={loading || this.state.imageUploading}
-                            aria-busy={loading || this.state.imageUploading}
+            <Auth>
+                <Mutation
+                    mutation={CREATE_MOVIE_MUTATION}
+                    variables={this.state}
+                    refetchQueries={[
+                        {
+                            query: ALL_MOVIES_QUERY
+                        }
+                    ]}
+                >
+                    {(createMovie, { loading, error }) => (
+                        <Form
+                            onSubmit={async e => {
+                                e.preventDefault();
+                                const res = await createMovie();
+                                navigate(`/movies/${res.data.createMovie.id}`);
+                            }}
                         >
-                            <label htmlFor="file">File</label>
-                            <input
-                                type="file"
-                                id="file"
-                                name="file"
-                                placeholder="Upload an Image"
-                                required
-                                onChange={this.uploadFile}
-                            />
-                            {this.state.image && (
-                                <img
-                                    width="200"
-                                    src={this.state.image}
-                                    alt="Upload Preview"
+                            <h2>Add a movie</h2>
+                            {error && <Error error={error} />}
+                            <fieldset
+                                disabled={loading || this.state.imageUploading}
+                                aria-busy={loading || this.state.imageUploading}
+                            >
+                                <label htmlFor="file">File</label>
+                                <input
+                                    type="file"
+                                    id="file"
+                                    name="file"
+                                    placeholder="Upload an Image"
+                                    required
+                                    onChange={this.uploadFile}
                                 />
-                            )}
-                            <label htmlFor="title">Title</label>
-                            <input
-                                type="text"
-                                id="title"
-                                name="title"
-                                placeholder="Title"
-                                required
-                                value={this.state.title}
-                                onChange={this.handleChange}
-                            />
-                            <label htmlFor="year">Year</label>
-                            <input
-                                type="number"
-                                id="year"
-                                name="year"
-                                placeholder="Year"
-                                required
-                                value={this.state.year}
-                                onChange={this.handleChange}
-                            />
-                            <label htmlFor="description">Description</label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                placeholder="Enter a Description"
-                                required
-                                value={this.state.description}
-                                onChange={this.handleChange}
-                            />
-                            <button type="submit">Submit</button>
-                        </fieldset>
-                    </Form>
-                )}
-            </Mutation>
+                                {this.state.image && (
+                                    <img
+                                        width="200"
+                                        src={this.state.image}
+                                        alt="Upload Preview"
+                                    />
+                                )}
+                                <label htmlFor="title">Title</label>
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    placeholder="Title"
+                                    required
+                                    value={this.state.title}
+                                    onChange={this.handleChange}
+                                />
+                                <label htmlFor="year">Year</label>
+                                <input
+                                    type="number"
+                                    id="year"
+                                    name="year"
+                                    placeholder="Year"
+                                    required
+                                    value={this.state.year}
+                                    onChange={this.handleChange}
+                                />
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    placeholder="Enter a Description"
+                                    required
+                                    value={this.state.description}
+                                    onChange={this.handleChange}
+                                />
+                                <div>
+                                    <button type="submit">Submit</button>
+                                </div>
+                            </fieldset>
+                        </Form>
+                    )}
+                </Mutation>
+            </Auth>
         );
     }
 }

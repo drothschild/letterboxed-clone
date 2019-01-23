@@ -62,8 +62,6 @@ html {
 const Content = styled.div`
     background: url(${background}) 0 -1px repeat-x;
     background-color: ${props => props.theme.black};
-    background-size: 100% 100%;
-    height: 100vh;
     margin: 0 auto;
     padding: 2rem;
 `;
