@@ -23,7 +23,7 @@ const Movie = ({ movie }) => (
                         />
                     )}
                     <p>
-                        {movie.title}-{movie.year}
+                        {movie.title} - {movie.year}
                     </p>
                 </Link>
             )}

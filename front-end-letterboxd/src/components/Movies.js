@@ -9,7 +9,7 @@ import Movie from './Movie';
 
 const ALL_MOVIES_QUERY = gql`
     query ALL_MOVIES_QUERY {
-        movies(orderBy: title_ASC) {
+        movies {
             id
             title
             year
@@ -30,6 +30,8 @@ const MoviesList = styled.div`
     margin: 0 auto;
 `;
 class Movies extends Component {
+    state = { sortBy: 'Title', sortDirection: 'asc' };
+
     render() {
         return (
             <div>
@@ -39,12 +41,79 @@ class Movies extends Component {
                         {({ data, error, loading }) => {
                             if (loading) return <p>Loading..</p>;
                             if (error) return <Error error={error} />;
+                            const propList = Object.keys(data.movies[0]).filter(
+                                i => i !== '__typename'
+                            );
                             return (
-                                <MoviesList>
-                                    {data.movies.map(movie => (
-                                        <Movie key={movie.id} movie={movie} />
-                                    ))}
-                                </MoviesList>
+                                <>
+                                    <select
+                                        value={this.state.sortBy}
+                                        onChange={e => {
+                                            this.setState({
+                                                sortBy: e.target.value
+                                            });
+                                        }}
+                                    >
+                                        {propList.map(prop => (
+                                            <option key={prop} value={prop}>
+                                                {prop}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        value={this.state.sortDirection}
+                                        onChange={e => {
+                                            this.setState({
+                                                sortDirection: e.target.value
+                                            });
+                                        }}
+                                    >
+                                        <option value="asc">asc</option>
+                                        <option value="desc">desc</option>
+                                    </select>
+                                    <MoviesList>
+                                        {data.movies
+                                            .sort((a, b) => {
+                                                if (
+                                                    this.state.sortDirection ===
+                                                    'asc'
+                                                ) {
+                                                    if (
+                                                        a[this.state.sortBy] <
+                                                        b[this.state.sortBy]
+                                                    ) {
+                                                        return -1;
+                                                    }
+                                                    if (
+                                                        a[this.state.sortBy] >
+                                                        b[this.state.sortBy]
+                                                    ) {
+                                                        return 1;
+                                                    }
+                                                    return 0;
+                                                }
+                                                if (
+                                                    b[this.state.sortBy] <
+                                                    a[this.state.sortBy]
+                                                ) {
+                                                    return -1;
+                                                }
+                                                if (
+                                                    b[this.state.sortBy] >
+                                                    a[this.state.sortBy]
+                                                ) {
+                                                    return 1;
+                                                }
+                                                return 0;
+                                            })
+                                            .map(movie => (
+                                                <Movie
+                                                    key={movie.id}
+                                                    movie={movie}
+                                                />
+                                            ))}
+                                    </MoviesList>
+                                </>
                             );
                         }}
                     </Query>
