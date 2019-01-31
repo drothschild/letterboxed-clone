@@ -6,6 +6,7 @@ import Error from './Error';
 import { AvatarImg } from './styles/ImageStyles';
 import Profile from './imgs/profile.jpg';
 import UserReviewList from './UserReviewList';
+import FollowButton from './FollowButton';
 
 const USER_DETAILS_QUERY = gql`
     query USER_DETAILS_QUERY($id: ID!) {
@@ -24,6 +25,11 @@ const USER_DETAILS_QUERY = gql`
                     image
                     title
                 }
+            }
+            following {
+                id
+                name
+                email
             }
         }
     }
@@ -45,6 +51,7 @@ const UserDetails = ({ userId }) => (
                 <UserDetailsStyles>
                     <AvatarImg src={avatar} alt={user.name} />
                     <h1>{user.name}</h1>
+                    <FollowButton userId={user.id} />
                     <UserReviewList reviews={user.reviews} />
                 </UserDetailsStyles>
             );

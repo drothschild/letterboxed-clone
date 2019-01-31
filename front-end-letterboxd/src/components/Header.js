@@ -24,13 +24,14 @@ const StyledLinks = styled.ul`
     button {
         font-size: 2rem;
         padding: 0 2rem 0 0;
-        display: inline-block;
-        border: none;
         background: inherit;
         color: inherit;
         &:hover {
             color: ${props => props.theme.white};
         }
+    }
+    button {
+        border: 5px white;
     }
 `;
 

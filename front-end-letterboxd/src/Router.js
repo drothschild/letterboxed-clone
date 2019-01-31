@@ -8,6 +8,7 @@ import CreateReview from './components/CreateReview';
 import ReviewDetails from './components/ReviewDetails';
 import UserDetails from './components/UserDetails';
 import Users from './components/Users';
+import Feed from './components/Feed';
 
 export default class Routes extends Component {
     render() {
@@ -15,6 +16,7 @@ export default class Routes extends Component {
             <Router>
                 <Main path="/" />
                 <Movies path="movies" />
+                <Feed path="feed" />
                 <CreateMovie path="movies/new" />
                 <MovieDetails path="movies/:movieId" />
                 <CreateReview path="movies/:movieId/review" />

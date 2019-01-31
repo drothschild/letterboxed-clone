@@ -9,6 +9,25 @@ const CURRENT_USER_QUERY = gql`
             id
             email
             name
+            following {
+                id
+                reviews {
+                    id
+                    rating
+                    contents
+                    createdAt
+                    movie {
+                        id
+                        title
+                        image
+                    }
+                    writer {
+                        id
+                        name
+                        image
+                    }
+                }
+            }
         }
     }
 `;
