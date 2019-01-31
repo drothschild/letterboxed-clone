@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { ApolloProvider } from 'react-apollo';
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
+
 import ApolloClient from 'apollo-boost';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 import background from './components/imgs/background.png';
@@ -69,15 +71,17 @@ class App extends Component {
     render() {
         return (
             <ApolloProvider client={client}>
-                <ThemeProvider theme={theme}>
-                    <React.Fragment>
-                        <GlobalStyle />
-                        <Header />
-                        <Content>
-                            <Router />
-                        </Content>
-                    </React.Fragment>
-                </ThemeProvider>
+                <ApolloHooksProvider client={client}>
+                    <ThemeProvider theme={theme}>
+                        <React.Fragment>
+                            <GlobalStyle />
+                            <Header />
+                            <Content>
+                                <Router />
+                            </Content>
+                        </React.Fragment>
+                    </ThemeProvider>
+                </ApolloHooksProvider>
             </ApolloProvider>
         );
     }

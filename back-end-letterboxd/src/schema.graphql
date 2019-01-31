@@ -13,12 +13,15 @@ type Mutation {
     ): Movie!
     createReview(contents: String!, movieId: ID!, rating: Int!): Review!
     logout: SuccessMessage
+    followUser(followingId: ID!): User
+    unfollowUser(followingId: ID!): User
 }
 
 type Query {
     me: User
     movies(where: MovieWhereInput, orderBy: MovieOrderByInput): [Movie]!
     movie(where: MovieWhereUniqueInput): Movie
+    myFeed: [Review]!
     reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput): [Review]!
     review(where: MovieWhereUniqueInput): Review
     users(where: UserWhereInput, orderBy: UserOrderByInput): [User]!
@@ -31,4 +34,6 @@ type User {
     email: String!
     image: String
     reviews: [Review!]!
+    followers: [User!]!
+    following: [User!]!
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Query } from 'react-apollo';
 import { Link } from '@reach/router';
-import { CURRENT_USER_QUERY } from './Me';
+import gql from 'graphql-tag';
 import {
     ReviewListStyles,
     ReviewListItemStyles
@@ -12,26 +12,43 @@ import Profile from './imgs/profile.jpg';
 import Error from './Error';
 import Auth from './Auth';
 
+const MY_FEED_QUERY = gql`
+    query MY_FEED_QUERY {
+        myFeed {
+            id
+            rating
+            contents
+            movie {
+                id
+                title
+                image
+            }
+            writer {
+                id
+                name
+                image
+            }
+        }
+    }
+`;
+
 const Feed = () => (
     <Auth>
-        <Query query={CURRENT_USER_QUERY}>
+        <Query query={MY_FEED_QUERY}>
             {({ error, loading, data }) => {
                 if (error) return <Error error={error} />;
                 if (loading) return <p>Loading...</p>;
-                const me = data.me;
-                let reviews = me.following
-                    .map(user => user.reviews)
-                    .flat()
-                    .sort((a, b) => {
-                        if (b.createdAt < a.createdAt) {
-                            return -1;
-                        }
-                        return 1;
-                    });
-                if (!reviews) return <div>You need to follow some people.</div>;
+                const myFeed = data.myFeed;
+                if (myFeed.length === 0)
+                    return (
+                        <div>
+                            You need to follow some people or your followers
+                            need to write some reviews.
+                        </div>
+                    );
                 return (
                     <ReviewListStyles>
-                        {reviews.map(review => {
+                        {myFeed.map(review => {
                             return (
                                 <ReviewListItemStyles key={review.id}>
                                     <div className="image-column">
@@ -70,3 +87,4 @@ const Feed = () => (
 );
 
 export default Feed;
+export {MY_FEED_QUERY};

@@ -5,6 +5,8 @@ type User {
     password: String!
     image: String
     reviews: [Review!]!
+    followers: [User!]! @relation(name: "FollowRelation")
+    following: [User!]! @relation(name: "FollowRelation")
 }
 
 type Movie {
@@ -22,4 +24,5 @@ type Review {
     movie: Movie!
     contents: String
     rating: Int
+    createdAt: DateTime!
 }

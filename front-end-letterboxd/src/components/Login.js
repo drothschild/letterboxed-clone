@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Mutation } from 'react-apollo';
+import React, { useState } from 'react';
+import { useMutation } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import Error from './Error';
 import Form from './styles/Form';
@@ -15,67 +15,67 @@ const LOGIN_MUTATION = gql`
     }
 `;
 
-export default class Login extends Component {
-    state = {
-        password: '',
-        email: ''
-    };
-    saveToState = e => {
-        this.setState({ [e.target.name]: e.target.value });
-    };
-    handleSubmit = async (e, submitFunction) => {
+function Login() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const login = useMutation(LOGIN_MUTATION, {
+        variables: { email, password },
+        refetchQueries: [{ query: CURRENT_USER_QUERY }]
+    });
+    const submitLogin = async e => {
         e.preventDefault();
-        await submitFunction();
-        this.setState({ email: '', password: '' });
+        setError(null);
+        setLoading(true);
+        try {
+            await login();
+            setEmail('');
+            setPassword('');
+        } catch (err) {
+            setError(err);
+        }
+        setLoading(false);
     };
-    render() {
-        return (
-            <Mutation
-                mutation={LOGIN_MUTATION}
-                variables={this.state}
-                refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-            >
-                {(login, { error, loading }, data) => (
-                    <Form
-                        method="post"
-                        onSubmit={async e => {
-                            e.preventDefault();
-                            await login();
-                            this.setState({
-                                email: '',
-                                password: ''
-                            });
+    return (
+        <Form
+            method="post"
+            onSubmit={submitLogin}
+            disabled={loading}
+            aria-busy={loading}
+        >
+            <fieldset>
+                <h2>Sign in</h2>
+                <Error error={error} />
+                <label htmlFor="email">
+                    Email
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="email"
+                        value={email}
+                        onChange={e => {
+                            setEmail(e.target.value);
                         }}
-                    >
-                        <fieldset disabled={loading} aria-busy={loading}>
-                            <h2>Sign in</h2>
-                            <Error error={error} />
-                            <label htmlFor="email">
-                                Email
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="email"
-                                    value={this.state.email}
-                                    onChange={this.saveToState}
-                                />
-                            </label>
-                            <label htmlFor="password">
-                                Password
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="password"
-                                    value={this.state.password}
-                                    onChange={this.saveToState}
-                                />
-                            </label>
+                    />
+                </label>
+                <label htmlFor="password">
+                    Password
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="password"
+                        value={password}
+                        onChange={e => {
+                            setPassword(e.target.value);
+                        }}
+                    />
+                </label>
 
-                            <button type="submit">Log In</button>
-                        </fieldset>
-                    </Form>
-                )}
-            </Mutation>
-        );
-    }
+                <button type="submit">Log In</button>
+            </fieldset>
+        </Form>
+    );
 }
+
+export default Login;

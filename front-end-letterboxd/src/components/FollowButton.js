@@ -2,6 +2,7 @@ import React from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import { CURRENT_USER_QUERY } from './Me';
+import { MY_FEED_QUERY } from './Feed';
 import Error from './Error';
 
 const FOLLOW_USER_MUTATION = gql`
@@ -24,7 +25,7 @@ const FollowButton = ({ userId }) => (
         {({ data, loading, error }) => {
             if (loading) return <p>Loading...</p>;
             if (error) return <Error error={error} />;
-            if (!data.me.following) {
+            if (!data.me) {
                 return null;
             }
             const isFollowed =
@@ -36,7 +37,10 @@ const FollowButton = ({ userId }) => (
                     <Mutation
                         mutation={UNFOLLOW_USER_MUTATION}
                         variables={{ followingId: userId }}
-                        refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+                        refetchQueries={[
+                            { query: CURRENT_USER_QUERY },
+                            { query: MY_FEED_QUERY }
+                        ]}
                     >
                         {(unfollowUser, error, loading) => (
                             <button

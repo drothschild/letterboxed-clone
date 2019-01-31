@@ -79,6 +79,45 @@ const mutations = {
             info
         );
         return review;
+    },
+    async followUser(parent, args, ctx, info) {
+        if (!ctx.request.userId) {
+            throw new Error('You must be logged in to do that');
+        }
+        const user = await ctx.db.mutation.updateUser(
+            {
+                where: { id: ctx.request.userId },
+                data: {
+                    following: {
+                        connect: {
+                            id: args.followingId
+                        }
+                    }
+                }
+            },
+            info
+        );
+
+        return user;
+    },
+    async unfollowUser(parent, args, ctx, info) {
+        if (!ctx.request.userId) {
+            throw new Error('You must be logged in to do that');
+        }
+        const user = await ctx.db.mutation.updateUser(
+            {
+                where: { id: ctx.request.userId },
+                data: {
+                    following: {
+                        disconnect: {
+                            id: args.followingId
+                        }
+                    }
+                }
+            },
+            info
+        );
+        return user;
     }
 };
 

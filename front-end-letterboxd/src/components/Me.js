@@ -11,22 +11,7 @@ const CURRENT_USER_QUERY = gql`
             name
             following {
                 id
-                reviews {
-                    id
-                    rating
-                    contents
-                    createdAt
-                    movie {
-                        id
-                        title
-                        image
-                    }
-                    writer {
-                        id
-                        name
-                        image
-                    }
-                }
+                name
             }
         }
     }

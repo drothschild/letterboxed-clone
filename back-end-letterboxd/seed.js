@@ -13,7 +13,8 @@ const db = new Prisma({
 const seedConfig = {
     numberOfUsers: 200,
     numberOfMovies: 10,
-    numberOfReviewsPerUser: 3
+    numberOfReviewsPerUser: 3,
+    numberOfFollowing: 10
 };
 
 const setup = async () => {
@@ -61,6 +62,19 @@ const setup = async () => {
                     },
                     contents: faker.lorem.paragraphs(3),
                     rating: Math.floor(Math.random() * 5)
+                }
+            });
+        }
+        for (let index = 0; index < seedConfig.numberOfFollowing; index++) {
+            const randomUser = users[Math.floor(Math.random() * users.length)];
+            await db.mutation.updateUser({
+                where: { id: user.id },
+                data: {
+                    following: {
+                        connect: {
+                            id: randomUser.id
+                        }
+                    }
                 }
             });
         }
