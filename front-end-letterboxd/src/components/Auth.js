@@ -1,10 +1,11 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import { CURRENT_USER_QUERY } from './Me';
 import Error from './Error';
 import styled from 'styled-components';
 import Login from './Login';
 import Register from './Register';
+import Main from './Main';
 
 const Columns = styled.div`
     display: grid;
@@ -12,22 +13,22 @@ const Columns = styled.div`
     grid-gap: 20px;
 `;
 
-const Auth = props => (
-    <Query query={CURRENT_USER_QUERY}>
-        {({ data, loading, error }) => {
-            if (loading) return <p>Loading...</p>;
-            if (error) return <Error error={error} />;
-            if (!data.me) {
-                return (
-                    <Columns>
-                        <Register />
-                        <Login />
-                    </Columns>
-                );
-            }
-            return props.children;
-        }}
-    </Query>
-);
+function Auth(props) {
+    const {data, error} = useQuery(CURRENT_USER_QUERY)
+    if (error) return <Error error={error} />;
+    if (!data.me) {
+        return (
+            <Columns>
+                <Register />
+                <Login />
+            </Columns>
+        );
+    }
+    if (!props.children) {
+        return <Main />
+    }
+
+    return  props.children;
+}
 
 export default Auth;

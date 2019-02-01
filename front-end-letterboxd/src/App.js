@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 
@@ -73,13 +73,13 @@ class App extends Component {
             <ApolloProvider client={client}>
                 <ApolloHooksProvider client={client}>
                     <ThemeProvider theme={theme}>
-                        <React.Fragment>
+                        <Suspense fallback={<div>Loading....</div>}>
                             <GlobalStyle />
                             <Header />
                             <Content>
                                 <Router />
                             </Content>
-                        </React.Fragment>
+                        </Suspense>
                     </ThemeProvider>
                 </ApolloHooksProvider>
             </ApolloProvider>

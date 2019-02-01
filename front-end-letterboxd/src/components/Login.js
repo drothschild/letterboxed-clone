@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import Error from './Error';
 import Form from './styles/Form';
 import { CURRENT_USER_QUERY } from './Me';
+import { MY_FEED_QUERY } from './Feed';
 
 const LOGIN_MUTATION = gql`
     mutation LOGIN_MUTATION($email: String!, $password: String!) {
@@ -22,7 +23,10 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const login = useMutation(LOGIN_MUTATION, {
         variables: { email, password },
-        refetchQueries: [{ query: CURRENT_USER_QUERY }]
+        refetchQueries: [
+            { query: CURRENT_USER_QUERY },
+            { query: MY_FEED_QUERY }
+        ]
     });
     const submitLogin = async e => {
         e.preventDefault();

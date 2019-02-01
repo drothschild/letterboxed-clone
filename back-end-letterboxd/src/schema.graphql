@@ -21,11 +21,15 @@ type Query {
     me: User
     movies(where: MovieWhereInput, orderBy: MovieOrderByInput): [Movie]!
     movie(where: MovieWhereUniqueInput): Movie
-    myFeed: [Review]!
+    myFeed: [Review]
     reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput): [Review]!
     review(where: MovieWhereUniqueInput): Review
     users(where: UserWhereInput, orderBy: UserOrderByInput): [User]!
     user(where: UserWhereUniqueInput): User
+}
+
+type Subscription {
+    myFeed: ReviewSubscriptionPayload
 }
 
 type User {

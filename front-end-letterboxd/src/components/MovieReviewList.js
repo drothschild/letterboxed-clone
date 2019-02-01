@@ -7,7 +7,7 @@ import {
 import Profile from './imgs/profile.jpg';
 import { AvatarImg } from './styles/ImageStyles';
 
-const MovieReviewList = reviews => {
+function MovieReviewList(reviews) {
     return (
         <ReviewListStyles>
             {reviews.reviews.map(review => (
@@ -30,6 +30,6 @@ const MovieReviewList = reviews => {
             ))}
         </ReviewListStyles>
     );
-};
+}
 
 export default MovieReviewList;

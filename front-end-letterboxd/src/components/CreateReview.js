@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Mutation, Query } from 'react-apollo';
+import React, { useState } from 'react';
+import { useMutation, useQuery } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import { navigate } from '@reach/router';
 import styled from 'styled-components';
@@ -52,103 +52,94 @@ const CreateReviewStyles = styled.div`
     }
 `;
 
-export default class CreateReview extends Component {
-    state = {
+function CreateReview({ movieId }) {
+    const [form, setForm] = useState({
         contents: '',
-        rating: ''
-    };
-    handleChange = e => {
+        rating: 0
+    });
+    const { data, error: errorQuery } = useQuery(MOVIE_DETAILS_QUERY, {
+        variables: { id: movieId }
+    });
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const createReview = useMutation(CREATE_REVIEW_MUTATION, {
+        variables: { ...form, movieId },
+        refetchQueries: [
+            {
+                query: MOVIE_DETAILS_QUERY,
+                variables: { id: movieId }
+            }
+        ]
+    });
+
+    const handleChange = e => {
         const { name, type, value } = e.target;
         const val = type === 'number' ? parseFloat(value) : value;
-        this.setState({
-            [name]: val
-        });
+        setForm({ ...form, [name]: val });
     };
 
-    render() {
-        const { contents, rating } = this.state;
-        const { movieId } = this.props;
-
+    const submitForm = async e => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await createReview();
+            navigate(`/reviews/${res.data.createReview.id}`);
+        } catch (err) {
+            setError(err);
+        }
+        setLoading(false);
+    };
+    if (errorQuery)
         return (
             <Auth>
-                <Mutation
-                    mutation={CREATE_REVIEW_MUTATION}
-                    variables={{ movieId: movieId, ...this.state }}
-                    refetchQueries={[
-                        {
-                            query: MOVIE_DETAILS_QUERY,
-                            variables: { id: movieId }
-                        }
-                    ]}
-                >
-                    {createReview => (
-                        <CreateReviewStyles>
-                            <h1>I watched...</h1>
-                            <Query
-                                query={MOVIE_DETAILS_QUERY}
-                                variables={{ id: movieId }}
-                            >
-                                {({ error, loading, data }) => {
-                                    if (error) return <Error error={error} />;
-                                    if (loading) return <p>Loading...</p>;
-                                    const movie = data.movie;
-                                    if (!data.movie)
-                                        return (
-                                            <p>
-                                                No Movie Found for{' '}
-                                                {this.props.movieId}
-                                            </p>
-                                        );
-                                    return (
-                                        <>
-                                            <h2>
-                                                {movie.title}
-                                                <span className="metadata">
-                                                    {movie.year}
-                                                </span>
-                                            </h2>
-                                            <img
-                                                src={movie.image}
-                                                alt={movie.title}
-                                            />
-                                        </>
-                                    );
-                                }}
-                            </Query>
-                            <form
-                                onSubmit={async e => {
-                                    e.preventDefault();
-                                    const res = await createReview();
-                                    navigate(
-                                        `/reviews/${res.data.createReview.id}`
-                                    );
-                                }}
-                            >
-                                <textarea
-                                    id="contents"
-                                    name="contents"
-                                    placeholder="Add a review..."
-                                    required
-                                    value={contents}
-                                    onChange={this.handleChange}
-                                />
-                                {/* Todo: Change this to star svg */}
-                                <label htmlFor="rating">
-                                    Rating: 0-4 stars
-                                </label>
-                                <input
-                                    id="rating"
-                                    name="rating"
-                                    type="number"
-                                    value={rating}
-                                    onChange={this.handleChange}
-                                />
-                                <button type="submit">Save</button>
-                            </form>
-                        </CreateReviewStyles>
-                    )}
-                </Mutation>
+                <Error error={errorQuery} />
             </Auth>
         );
-    }
+    const movie = data.movie;
+    if (!data.movie)
+        return (
+            <Auth>
+                <p>No Movie Found for {movieId}</p>
+            </Auth>
+        );
+
+    return (
+        <Auth>
+            <CreateReviewStyles>
+                <div>
+                    <h2>
+                        {movie.title}
+                        <span className="metadata">{movie.year}</span>
+                    </h2>
+                    <img src={movie.image} alt={movie.title} />
+                </div>
+
+                <form onSubmit={submitForm}>
+                    <Error error={error} />
+                    <fieldset disabled={loading} aria-busy={loading}>
+                        <textarea
+                            id="contents"
+                            name="contents"
+                            placeholder="Add a review..."
+                            required
+                            value={form.contents}
+                            onChange={handleChange}
+                        />
+                        {/* Todo: Change this to star svg */}
+                        <label htmlFor="rating">Rating: 0-4 stars</label>
+                        <input
+                            id="rating"
+                            name="rating"
+                            type="number"
+                            value={form.rating}
+                            onChange={handleChange}
+                        />
+                        <button type="submit">Save</button>
+                    </fieldset>
+                </form>
+            </CreateReviewStyles>
+        </Auth>
+    );
 }
+
+export default CreateReview;

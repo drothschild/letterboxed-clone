@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from '@reach/router';
 import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
+
 import Error from './Error';
 import styled from 'styled-components';
 import MovieReviewList from './MovieReviewList';
@@ -38,29 +39,27 @@ const MOVIE_DETAILS_QUERY = gql`
     }
 `;
 
-const MovieDetails = ({ movieId }) => (
-    <Query query={MOVIE_DETAILS_QUERY} variables={{ id: movieId }}>
-        {({ error, loading, data }) => {
-            if (error) return <Error error={error} />;
-            if (loading) return <p>Loading...</p>;
-            if (!data.movie) return <p>No Movie Found for {movieId}</p>;
-            const movie = data.movie;
-            return (
-                <MovieDetailsStyles>
-                    <img src={movie.image} alt={movie.title} />
-                    <div className="details">
-                        <h2>
-                            {movie.title}- {movie.year}
-                        </h2>
-                        <p>{movie.description}</p>
-                        <Link to="review">Review it!</Link>
-                    </div>
-                    <MovieReviewList reviews={movie.reviews} />
-                </MovieDetailsStyles>
-            );
-        }}
-    </Query>
-);
+function MovieDetails({ movieId }) {
+    const { data, error } = useQuery(MOVIE_DETAILS_QUERY, {
+        variables: { id: movieId }
+    });
+    if (error) return <Error error={error} />;
+    if (!data.movie) return <p>No Movie Found for {movieId}</p>;
+    const movie = data.movie;
+    return (
+        <MovieDetailsStyles>
+            <img src={movie.image} alt={movie.title} />
+            <div className="details">
+                <h2>
+                    {movie.title}- {movie.year}
+                </h2>
+                <p>{movie.description}</p>
+                <Link to="review">Review it!</Link>
+            </div>
+            <MovieReviewList reviews={movie.reviews} />
+        </MovieDetailsStyles>
+    );
+}
 
 export default MovieDetails;
 

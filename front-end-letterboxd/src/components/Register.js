@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
-import { Mutation } from 'react-apollo';
+import React, { useState } from 'react';
+import { useMutation } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import Error from './Error';
 import Form from './styles/Form';
 import { CURRENT_USER_QUERY } from './Me';
+import { MY_FEED_QUERY } from './Feed';
 
 const REGISTER_MUTATION = gql`
     mutation REGISTER_MUTATION(
@@ -19,76 +20,81 @@ const REGISTER_MUTATION = gql`
     }
 `;
 
-class Register extends Component {
-    state = {
-        password: '',
-        email: '',
-        name: ''
-    };
-    saveToState = e => {
-        this.setState({ [e.target.name]: e.target.value });
-    };
-    render() {
-        return (
-            <Mutation
-                mutation={REGISTER_MUTATION}
-                variables={this.state}
-                refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-            >
-                {(register, { error, loading }) => (
-                    <Form
-                        method="post"
-                        onSubmit={async e => {
-                            e.preventDefault();
-                            await register();
-                            this.setState({
-                                email: '',
-                                password: '',
-                                name: ''
-                            });
+function Register() {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const register = useMutation(REGISTER_MUTATION, {
+        variables: { name, email, password },
+        refetchQueries: [
+            { query: CURRENT_USER_QUERY },
+            { query: MY_FEED_QUERY }
+        ]
+    });
+    return (
+        <Form
+            method="post"
+            onSubmit={async e => {
+                e.preventDefault();
+                setError(null);
+                setLoading(true);
+                try {
+                    await register();
+                    setLoading(false);
+                    setName('');
+                    setEmail('');
+                } catch (error) {
+                    setError(error);
+                    setLoading(false);
+                }
+            }}
+        >
+            <fieldset disabled={loading} aria-busy={loading}>
+                <h2>Register</h2>
+                <Error error={error} />
+                <label htmlFor="name">
+                    Name
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="name"
+                        value={name}
+                        onChange={e => {
+                            setName(e.target.value);
                         }}
-                    >
-                        <fieldset disabled={loading} aria-busy={loading}>
-                            <h2>Register</h2>
-                            <Error error={error} />
-                            <label htmlFor="name">
-                                Name
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="name"
-                                    value={this.state.name}
-                                    onChange={this.saveToState}
-                                />
-                            </label>
-                            <label htmlFor="email">
-                                Email
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="email"
-                                    value={this.state.email}
-                                    onChange={this.saveToState}
-                                />
-                            </label>
-                            <label htmlFor="password">
-                                Password
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="password"
-                                    value={this.state.password}
-                                    onChange={this.saveToState}
-                                />
-                            </label>
+                    />
+                </label>
+                <label htmlFor="email">
+                    Email
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="email"
+                        value={email}
+                        onChange={e => {
+                            setEmail(e.target.value);
+                        }}
+                    />
+                </label>
+                <label htmlFor="password">
+                    Password
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="password"
+                        value={password}
+                        onChange={e => {
+                            setPassword(e.target.value);
+                        }}
+                    />
+                </label>
 
-                            <button type="submit">Register</button>
-                        </fieldset>
-                    </Form>
-                )}
-            </Mutation>
-        );
-    }
+                <button type="submit">Register</button>
+            </fieldset>
+        </Form>
+    );
 }
 
 export default Register;

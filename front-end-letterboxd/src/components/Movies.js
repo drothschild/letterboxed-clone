@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Query } from 'react-apollo';
+import React, { useState } from 'react';
+import { useQuery } from 'react-apollo-hooks';
 import { Link } from '@reach/router';
 
 import gql from 'graphql-tag';
@@ -29,98 +29,68 @@ const MoviesList = styled.div`
     max-width: ${props => props.theme.maxWidth};
     margin: 0 auto;
 `;
-class Movies extends Component {
-    state = { sortBy: 'Title', sortDirection: 'asc' };
-
-    render() {
-        return (
-            <div>
-                <Link to="new">Add a movie</Link>
-                <Center>
-                    <Query query={ALL_MOVIES_QUERY}>
-                        {({ data, error, loading }) => {
-                            if (loading) return <p>Loading..</p>;
-                            if (error) return <Error error={error} />;
-                            const propList = Object.keys(data.movies[0]).filter(
-                                i => i !== '__typename'
-                            );
-                            return (
-                                <>
-                                    <select
-                                        value={this.state.sortBy}
-                                        onChange={e => {
-                                            this.setState({
-                                                sortBy: e.target.value
-                                            });
-                                        }}
-                                    >
-                                        {propList.map(prop => (
-                                            <option key={prop} value={prop}>
-                                                {prop}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <select
-                                        value={this.state.sortDirection}
-                                        onChange={e => {
-                                            this.setState({
-                                                sortDirection: e.target.value
-                                            });
-                                        }}
-                                    >
-                                        <option value="asc">asc</option>
-                                        <option value="desc">desc</option>
-                                    </select>
-                                    <MoviesList>
-                                        {data.movies
-                                            .sort((a, b) => {
-                                                if (
-                                                    this.state.sortDirection ===
-                                                    'asc'
-                                                ) {
-                                                    if (
-                                                        a[this.state.sortBy] <
-                                                        b[this.state.sortBy]
-                                                    ) {
-                                                        return -1;
-                                                    }
-                                                    if (
-                                                        a[this.state.sortBy] >
-                                                        b[this.state.sortBy]
-                                                    ) {
-                                                        return 1;
-                                                    }
-                                                    return 0;
-                                                }
-                                                if (
-                                                    b[this.state.sortBy] <
-                                                    a[this.state.sortBy]
-                                                ) {
-                                                    return -1;
-                                                }
-                                                if (
-                                                    b[this.state.sortBy] >
-                                                    a[this.state.sortBy]
-                                                ) {
-                                                    return 1;
-                                                }
-                                                return 0;
-                                            })
-                                            .map(movie => (
-                                                <Movie
-                                                    key={movie.id}
-                                                    movie={movie}
-                                                />
-                                            ))}
-                                    </MoviesList>
-                                </>
-                            );
+function Movies() {
+    const [sortBy, setSortBy] = useState('title');
+    const [sortDirection, setSortDirection] = useState('asc');
+    const { data, error } = useQuery(ALL_MOVIES_QUERY);
+    if (error) return <Error error={error} />;
+    const propList = Object.keys(data.movies[0]).filter(
+        i => i !== '__typename'
+    );
+    return (
+        <div>
+            <Link to="new">Add a movie</Link>
+            <Center>
+                <>
+                    <select
+                        value={sortBy}
+                        onChange={e => {
+                            setSortBy(e.target.value);
                         }}
-                    </Query>
-                </Center>
-            </div>
-        );
-    }
+                    >
+                        {propList.map(prop => (
+                            <option key={prop} value={prop}>
+                                {prop}
+                            </option>
+                        ))}
+                    </select>
+                    <select
+                        value={sortDirection}
+                        onChange={e => {
+                            setSortDirection(e.target.value);
+                        }}
+                    >
+                        <option value="asc">asc</option>
+                        <option value="desc">desc</option>
+                    </select>
+                    <MoviesList>
+                        {data.movies
+                            .sort((a, b) => {
+                                if (sortDirection === 'asc') {
+                                    if (a[sortBy] < b[sortBy]) {
+                                        return -1;
+                                    }
+                                    if (a[sortBy] > b[sortBy]) {
+                                        return 1;
+                                    }
+                                    return 0;
+                                }
+                                if (b[sortBy] < a[sortBy]) {
+                                    return -1;
+                                }
+                                if (b[sortBy] > a[sortBy]) {
+                                    return 1;
+                                }
+                                return 0;
+                            })
+                            .map(movie => (
+                                <Movie key={movie.id} movie={movie} />
+                            ))}
+                    </MoviesList>
+                </>
+            </Center>
+        </div>
+    );
 }
 
 export default Movies;
