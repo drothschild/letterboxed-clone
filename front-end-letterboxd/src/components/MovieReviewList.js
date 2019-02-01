@@ -7,10 +7,10 @@ import {
 import Profile from './imgs/profile.jpg';
 import { AvatarImg } from './styles/ImageStyles';
 
-function MovieReviewList(reviews) {
+function MovieReviewList({ reviews }) {
     return (
         <ReviewListStyles>
-            {reviews.reviews.map(review => (
+            {reviews.map(review => (
                 <ReviewListItemStyles key={review.id}>
                     <div className="image-column">
                         <AvatarImg

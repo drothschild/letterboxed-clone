@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Suspense } from 'react';
 import { Router } from '@reach/router';
 import Movies from './components/Movies';
 import CreateMovie from './components/CreateMovie';
@@ -11,9 +11,9 @@ import Users from './components/Users';
 import Feed from './components/Feed';
 import Auth from './components/Auth';
 
-export default class Routes extends Component {
-    render() {
-        return (
+function Routes() {
+    return (
+        <Suspense fallback="loading...">
             <Router>
                 <Main path="/" />
                 <Auth path="/auth" />
@@ -26,6 +26,8 @@ export default class Routes extends Component {
                 <Users path="users" />
                 <UserDetails path="users/:userId" />
             </Router>
-        );
-    }
+        </Suspense>
+    );
 }
+
+export default Routes;

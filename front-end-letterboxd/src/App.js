@@ -1,5 +1,4 @@
-import React, { Component, Suspense } from 'react';
-import { ApolloProvider } from 'react-apollo';
+import React, { Suspense } from 'react';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
 
 import ApolloClient from 'apollo-boost';
@@ -67,23 +66,19 @@ const Content = styled.div`
     margin: 0 auto;
     padding: 2rem;
 `;
-class App extends Component {
-    render() {
-        return (
-            <ApolloProvider client={client}>
-                <ApolloHooksProvider client={client}>
-                    <ThemeProvider theme={theme}>
-                        <Suspense fallback={<div>Loading....</div>}>
-                            <GlobalStyle />
-                            <Header />
-                            <Content>
-                                <Router />
-                            </Content>
-                        </Suspense>
-                    </ThemeProvider>
-                </ApolloHooksProvider>
-            </ApolloProvider>
-        );
-    }
+function App() {
+    return (
+        <ThemeProvider theme={theme}>
+            <ApolloHooksProvider client={client}>
+                <GlobalStyle />
+                <Suspense fallback={<div>Loading Header....</div>}>
+                    <Header />
+                </Suspense>
+                <Content>
+                    <Router />
+                </Content>
+            </ApolloHooksProvider>
+        </ThemeProvider>
+    );
 }
 export default App;

@@ -1,6 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
+
 import styled from 'styled-components';
 import Error from './Error';
 import { AvatarImg } from './styles/ImageStyles';
@@ -39,24 +40,22 @@ const UserDetailsStyles = styled.div`
     max-width: ${props => props.theme.maxwidth};
 `;
 
-const UserDetails = ({ userId }) => (
-    <Query query={USER_DETAILS_QUERY} variables={{ id: userId }}>
-        {({ error, loading, data }) => {
-            if (error) return <Error error={error} />;
-            if (loading) return <p>Loading...</p>;
-            if (!data.user) return <p>No User Found for {userId}</p>;
-            const user = data.user;
-            const avatar = user.image || Profile;
-            return (
-                <UserDetailsStyles>
-                    <AvatarImg src={avatar} alt={user.name} />
-                    <h1>{user.name}</h1>
-                    <FollowButton userId={user.id} />
-                    <UserReviewList reviews={user.reviews} />
-                </UserDetailsStyles>
-            );
-        }}
-    </Query>
-);
+function UserDetails({ userId }) {
+    const { data, error } = useQuery(USER_DETAILS_QUERY, {
+        variables: { id: userId }
+    });
+    if (error) return <Error error={error} />;
+    if (!data.user) return <p>No User Found for {userId}</p>;
+    const user = data.user;
+    const avatar = user.image || Profile;
+    return (
+        <UserDetailsStyles>
+            <AvatarImg src={avatar} alt={user.name} />
+            <h1>{user.name}</h1>
+            <FollowButton userId={user.id} />
+            <UserReviewList reviews={user.reviews} />
+        </UserDetailsStyles>
+    );
+}
 
 export default UserDetails;

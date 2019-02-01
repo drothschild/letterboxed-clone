@@ -6,10 +6,10 @@ import {
 } from './styles/ReviewListStyles';
 import { SmallMovieImg } from './styles/ImageStyles';
 
-const UserReviewList = reviews => {
+function UserReviewList({ reviews }) {
     return (
         <ReviewListStyles>
-            {reviews.reviews.map(review => (
+            {reviews.map(review => (
                 <ReviewListItemStyles key={review.id}>
                     <div className="image-column">
                         <SmallMovieImg
@@ -29,6 +29,6 @@ const UserReviewList = reviews => {
             ))}
         </ReviewListStyles>
     );
-};
+}
 
 export default UserReviewList;

@@ -55,9 +55,6 @@ function Header() {
                     <Link to="/movies">Movies</Link>
                 </li>
                 <li>
-                    <Link to="/movies">Movies</Link>
-                </li>
-                <li>
                     <Link to="/users">People</Link>
                 </li>
                 {data.me && (

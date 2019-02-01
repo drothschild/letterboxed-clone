@@ -18,13 +18,15 @@ const UserStyles = styled.div`
     }
 `;
 
-const User = ({ user }) => (
-    <UserStyles>
-        <Link to={user.id}>
-            <AvatarImg src={user.image || Profile} alt={user.name} />
-            <p>{user.name}</p>
-        </Link>
-    </UserStyles>
-);
+function User({ user }) {
+    return (
+        <UserStyles>
+            <Link to={user.id}>
+                <AvatarImg src={user.image || Profile} alt={user.name} />
+                <p>{user.name}</p>
+            </Link>
+        </UserStyles>
+    );
+}
 
 export default User;

@@ -6,7 +6,7 @@ import {
 } from './styles/ReviewListStyles';
 import { SmallMovieImg } from './styles/ImageStyles';
 
-const UserReviewList = following => {
+function UserReviewList(following) {
     return (
         <ReviewListStyles>
             {following.map(user => (
@@ -23,6 +23,6 @@ const UserReviewList = following => {
             ))}
         </ReviewListStyles>
     );
-};
+}
 
 export default UserReviewList;

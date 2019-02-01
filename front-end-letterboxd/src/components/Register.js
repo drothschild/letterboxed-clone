@@ -42,13 +42,13 @@ function Register() {
                 setLoading(true);
                 try {
                     await register();
-                    setLoading(false);
                     setName('');
                     setEmail('');
                 } catch (error) {
                     setError(error);
-                    setLoading(false);
+
                 }
+                setLoading(false);
             }}
         >
             <fieldset disabled={loading} aria-busy={loading}>

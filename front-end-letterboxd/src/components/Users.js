@@ -1,5 +1,5 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import gql from 'graphql-tag';
 import styled from 'styled-components';
 import Error from './Error';
@@ -27,22 +27,18 @@ const UsersList = styled.div`
     margin: 0 auto;
 `;
 
-const Users = () => (
-    <Center>
-        <Query query={All_USERS_QUERY}>
-            {({ data, error, loading }) => {
-                if (loading) return <p>Loading..</p>;
-                if (error) return <Error error={error} />;
-                return (
-                    <UsersList>
-                        {data.users.map(user => (
-                            <User key={user.id} user={user} />
-                        ))}
-                    </UsersList>
-                );
-            }}
-        </Query>
-    </Center>
-);
+function Users() {
+    const { data, error } = useQuery(All_USERS_QUERY);
+    if (error) return <Error error={error} />;
+    return (
+        <Center>
+            <UsersList>
+                {data.users.map(user => (
+                    <User key={user.id} user={user} />
+                ))}
+            </UsersList>
+        </Center>
+    );
+}
 
 export default Users;

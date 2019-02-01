@@ -1,6 +1,6 @@
 import React from 'react';
 import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import styled from 'styled-components';
 import { Link } from '@reach/router';
 import Error from './Error';
@@ -14,6 +14,7 @@ const REVIEW_DETAILS_QUERY = gql`
             rating
             writer {
                 id
+                image
                 name
             }
             movie {
@@ -47,15 +48,13 @@ const ReviewDetailsStyles = styled.div`
     }
 `;
 
-const ReviewDetails = ({ reviewId }) => (
-    <Query query={REVIEW_DETAILS_QUERY} variables={{ id: reviewId }}>
-        {({ error, loading, data }) => {
-            if (error) return <Error error={error} />;
-            if (loading) return <p>Loading...</p>;
+function ReviewDetails({ reviewId }) {
+    const {data, error} = useQuery(REVIEW_DETAILS_QUERY,{variables: {id: reviewId}})
+    if (error) return <Error error={error} />;
             if (!data.review)
-                return <p>No Movie Found for {this.props.movieId}</p>;
+                return <p>No Review Found for {reviewId}</p>;
             const review = data.review;
-            return (
+    return (
                 <ReviewDetailsStyles>
                     <div className="image-column">
                         <MediumMovieImg
@@ -80,8 +79,5 @@ const ReviewDetails = ({ reviewId }) => (
                     </div>
                 </ReviewDetailsStyles>
             );
-        }}
-    </Query>
-);
-
+        }
 export default ReviewDetails;
