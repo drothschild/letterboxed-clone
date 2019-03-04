@@ -33,7 +33,7 @@ const MY_FEED_QUERY = gql`
 `;
 
 function Feed() {
-    const { data, error } = useQuery(MY_FEED_QUERY);
+    const { data, error } = useQuery(MY_FEED_QUERY, {pollInterval: 1000});
     if (error) return <Error error={error} />;
     const myFeed = data.myFeed;
     if (!myFeed || myFeed.length === 0)
